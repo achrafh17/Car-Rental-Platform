@@ -5,11 +5,12 @@ const mongoose = require("mongoose");
 const { PORT } = process.env || 3001;
 app.use(cors());
 app.use(express.json());
+require("dotenv").config();
 const { Car, Client, User } = require("./models/db.js");
 //--------------------------------------------------
 mongoose
   .connect(
-    "mongodb+srv://achrafh17:Achraf2003@cluster0.lsxjh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+    `mongodb+srv://${process.env.User}:${process.env.MongoPassword}@cluster0.lsxjh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
   )
   .then((data) => {
     console.log("connected");
@@ -17,6 +18,8 @@ mongoose
   .catch((err) => {
     console.log("error conecting mongo db", err);
   });
+
+
 //-----------------------------------------------------
 
 //----------------------------------------
