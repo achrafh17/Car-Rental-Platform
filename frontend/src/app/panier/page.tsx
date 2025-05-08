@@ -5,8 +5,9 @@ import { useState } from "react";
 import Link from "next/link";
 export default function panier() {
   const [panier, setpanier] = useState([]);
+  const URL = process.env.NEXT_PUBLIC_URL;
   const handlepanier = () => {
-    fetch("http://localhost:3001/car", {
+    fetch(`${URL}car`, {
       method: "POST",
       headers: {
         "content-Type": "application/json",

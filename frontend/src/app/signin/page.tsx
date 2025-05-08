@@ -4,6 +4,7 @@ import Link from "next/link";
 import Window from "../components";
 
 export default function Signin() {
+  const URL = process.env.NEXT_PUBLIC_URL;
   const [formError, setFormError] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, seterror] = useState(false);
@@ -67,7 +68,7 @@ export default function Signin() {
       setLoading(true);
 
       try {
-        const response = await fetch("http://localhost:3001/signin", {
+        const response = await fetch(`${URL}signin`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -239,7 +240,7 @@ export default function Signin() {
         <div className="confirmation-container">
           <Window />
           <button className="section-authentification-button-continue">
-            <Link id="button-continue-link" href="paiment">
+            <Link id="button-continue-link" href="/paiment">
               Continuer
             </Link>
           </button>

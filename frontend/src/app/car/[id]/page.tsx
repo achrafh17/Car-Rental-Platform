@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 export default function Voiture({ params }: { params: { id: string } }) {
+  const URL = process.env.NEXT_PUBLIC_URL;
   const [cardata, setcardata] = useState({});
   const [validstart, setvalidstart] = useState(true);
   const [validend, setvalidend] = useState(true);
@@ -17,7 +18,7 @@ export default function Voiture({ params }: { params: { id: string } }) {
   const enddateref = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    fetch(`http://localhost:3001/car:${params.id}`, {
+    fetch(`${URL}${params.id}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
@@ -58,7 +59,7 @@ export default function Voiture({ params }: { params: { id: string } }) {
     }
 
     // Envoi des données
-    fetch("http://localhost:3001/articles", {
+    fetch(`${URL}articles`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 
 export default function cars() {
+  const URL = process.env.NEXT_PUBLIC_URL;
   const today = new Date().toISOString().split("T")[0];
   const [option, setOption] = useState("");
   const [carArray, setCarArray] = useState([]);
@@ -14,8 +15,8 @@ export default function cars() {
   const endRef = useRef();
 
   const handleSearch = async () => {
-    const startDate = startRef.current.value;
-    const endDate = endRef.current.value;
+    const startDate = startRef.current?.value;
+    const endDate = endRef.current?.value;
 
     // Date validation remains the same
     const startValid = new Date(startDate).getTime() > Date.now();
@@ -29,7 +30,7 @@ export default function cars() {
 
     if (startValid && endValid) {
       try {
-        const res = await fetch("http://localhost:3001/car", {
+        const res = await fetch(`${URL}car`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

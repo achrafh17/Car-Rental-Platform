@@ -3,6 +3,7 @@ import Link from "next/link";
 import React, { FormEvent } from "react";
 import { useState, useRef } from "react";
 export default function Middle() {
+  const URL = process.env.NEXT_PUBLIC_URL;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [form, setform] = useState("achraf");
@@ -11,7 +12,7 @@ export default function Middle() {
   const passwordref = useRef<HTMLInputElement>(null);
   const handlesubmit = (e: FormEvent) => {
     e.preventDefault();
-    fetch("http://localhost:3001/middle", {
+    fetch(`${URL}middle`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
