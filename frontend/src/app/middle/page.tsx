@@ -6,7 +6,7 @@ export default function Middle() {
   const URL = process.env.NEXT_PUBLIC_URL;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [form, setform] = useState("achraf");
+  const [form, setform] = useState("");
   const [name, setname] = useState("");
   const emailref = useRef<HTMLInputElement>(null);
   const passwordref = useRef<HTMLInputElement>(null);
@@ -52,7 +52,10 @@ export default function Middle() {
             S&apos;inscrire
           </Link>
 
-          <a className="password-oublie-button"> J'ai oublie le mot de passe</a>
+          <Link href="/forgetpassword" className="password-oublie-button">
+            {" "}
+            J'ai oublie le mot de passe
+          </Link>
         </div>
         <span>or</span>
         <Link href="/paiment">

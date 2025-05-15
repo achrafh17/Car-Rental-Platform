@@ -2,10 +2,27 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const mongoose = require("mongoose");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 const { PORT } = process.env || 3001;
 app.use(cors());
 app.use(express.json());
 require("dotenv").config();
+let codeSend = crypto.randomBytes(3).toString("hex").toUpperCase();
+//-------------------------------------------
+setInterval(() => {
+  codeSend = crypto.randomBytes(3).toString("hex");
+  console.log("New code generated:", codeSend);
+}, 3 * 60 * 1000);
+//--------------------------------------------------------
+console.log("codeSend value:", codeSend);
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.Usermail,
+    pass: process.env.pass,
+  },
+});
 const { Car, Client, User } = require("./models/db.js");
 //--------------------------------------------------
 mongoose
@@ -18,7 +35,6 @@ mongoose
   .catch((err) => {
     console.log("error conecting mongo db", err);
   });
-
 
 //-----------------------------------------------------
 
@@ -112,16 +128,78 @@ app.post("/signin", async (req, res) => {
     return res.json({ message: false });
   }
 });
-app.post("/middle", async (req, res) => {
-  const email = await req.body.email;
-  const password = await req.body.password;
-  console.log("email from middle", email);
-  console.log("password from middle", password);
+//------------------------POUR PROFILE ET AUTHENTIFICTATION
+async function midlle(req, res, next) {
+  const { email, password } = req.body;
+  req.sharedData = { email, password };
   const user = await User.findOne({ email, password });
-  if (user !== null) {
-    res.json({ message: true, name: user.name });
-  } else {
-    res.json({ message: false });
+  req.sharedData.user = user;
+  next();
+}
+
+app.use("/middle", midlle, async (req, res, next) => {
+  // const user = req.sharedData.user;
+  // if (user !== null) {
+  //   res.json({ message: true, name: user.name, user: user });
+  //   console.log("user", user);
+  // } else {
+  //   res.json({ message: false });
+  //   console.log(" no user", user);
+  // }
+});
+app.post("/profile", async (req, res) => {
+  const email = await req.sharedData;
+  // const password = await req.shareddata.password;
+  console.log("from profile", email);
+  // const user = User.findOne({ email: email, password: password });
+  // res.json({ user });
+});
+// ---------------envoyer un mail------------
+app.post("/passwordrecover", async (req, res) => {
+  try {
+    const email = await req.body.email;
+    const code = await req.body.code;
+    const endpoint = await req.body.endpoint;
+    console.log("voici le code", code);
+    if (endpoint === "first") {
+      console.log("code send ", codeSend);
+      await transporter.sendMail({
+        from: "achrafhafid565@gmail.com",
+        to: email,
+        subject: "recover password",
+        html: `
+        <p>code de verification est : ${codeSend}</p>`,
+      });
+    } else if (endpoint === "second") {
+      if (code) {
+        if (codeSend.toUpperCase() === code.toUpperCase()) {
+          res.status(201).json({ message: true });
+        } else {
+          res.json({ message: false });
+        }
+      } else {
+        res.status(200).json({ message: "code non fournit" });
+      }
+    }
+  } catch (err) {
+    console.log("erreur recover ", err);
+    res.status(400).json({ message: "problem d envoie " });
+  }
+});
+//----------------------------ENDPOINT FOR CHANGIN PASSWORD----------------
+app.post("/changingpassword", async (req, res) => {
+  try {
+    const email = await req.body.email;
+    const password = await req.body.newPassword;
+    const user = await User.findOne({ email: email });
+    if (user !== null) {
+      await User.updateOne({ email: email }, { $set: { password: password } });
+      res.status(201).json({ message: true });
+    } else {
+      res.status(400).json({ message: false });
+    }
+  } catch (err) {
+    console.log("error changin the password", err);
   }
 });
 
